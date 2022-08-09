@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 import Categories from './components/Categories';
 import Header from './components/Header';
@@ -8,6 +9,14 @@ import Sort from './components/Sort';
 import './scss/app.scss';
 
 const App = () => {
+  const [pizzas, setPizzas] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('https://628e5476368687f3e7150b3c.mockapi.io/pizzas')
+      .then(res => setPizzas(res.data));
+  }, []);
+
   return (
     <div className="wrapper">
       <Header />
@@ -19,10 +28,9 @@ const App = () => {
           </div>
           <h2 className="content__title">Все пиццы</h2>
           <div className="content__items">
-            <PizzaBlock title="PIIIIZZZA" />
-            <PizzaBlock />
-            <PizzaBlock />
-            <PizzaBlock />
+            {pizzas.map(pizza => (
+              <PizzaBlock key={pizza.id} {...pizza} />
+            ))}
           </div>
         </div>
       </div>

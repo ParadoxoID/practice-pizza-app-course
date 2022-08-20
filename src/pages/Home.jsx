@@ -1,18 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { setCategoryId, setCurrentPage } from '../redux/slices/filterSlice';
+import {
+  setCategoryId,
+  setCurrentPage,
+  setFilters
+} from '../redux/slices/filterSlice';
 import { SearchContext } from '../App';
 
 import Categories from '../components/Categories';
-import Sort from '../components/Sort';
+import Sort, { sortList } from '../components/Sort';
 import Loader from '../components/Loader';
 import PizzaBlock from '../components/PizzaBlock';
 import Pagination from '../components/Pagination';
+import { useRef } from 'react';
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
   const { categoryId, sort, currentPage } = useSelector(state => state.filter);
 
   const { searchValue } = useContext(SearchContext);
@@ -28,13 +38,14 @@ const Home = () => {
     dispatch(setCurrentPage(num));
   };
 
-  const category = categoryId > 0 ? `category=${categoryId}` : '';
-  const order = sort.sortProperty.includes('-') ? 'asc' : 'desc';
-  const sortBy = sort.sortProperty.replace('-', '');
-  const search = searchValue ? `search=${searchValue}` : '';
-
-  useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true);
+
+    const category = categoryId > 0 ? `category=${categoryId}` : '';
+    const order = sort.sortProperty.includes('-') ? 'asc' : 'desc';
+    const sortBy = sort.sortProperty.replace('-', '');
+    const search = searchValue ? `search=${searchValue}` : '';
+
     axios
       .get(
         `https://628e5476368687f3e7150b3c.mockapi.io/pizzas?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
@@ -43,15 +54,51 @@ const Home = () => {
         setPizzas(res.data);
         setIsLoading(false);
       });
+  };
 
+  useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sort.sortProperty,
+        categoryId,
+        currentPage
+      });
+
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sort.sortProperty, currentPage]);
+
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = sortList.find(o => o.sortProperty === params.sortProperty);
+
+      console.log('filters', params);
+      dispatch(
+        setFilters({
+          ...params,
+          sort
+        })
+      );
+      isSearch.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
-  }, [categoryId, sort, searchValue, currentPage]);
+
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+
+    isSearch.current = false;
+  }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const skeletons = [...new Array(12)].map((_, i) => <Loader key={i} />);
   const pizzasToRender = pizzas
-    .filter(pizza =>
-      pizza.title.toLowerCase().includes(searchValue.toLowerCase())
-    )
+    .filter(p => p.title.toLowerCase().includes(searchValue.toLowerCase()))
     .map(pizza => <PizzaBlock key={pizza.id} {...pizza} />);
 
   return (

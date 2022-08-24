@@ -31,6 +31,17 @@ body {
     margin-bottom: 50px;
   }
 
+  &__error-info {
+    margin: 60px auto;
+    width: 580px;
+    text-align: center;
+
+    h2 {
+      font-size: 32px;
+      font-weight: bold;
+    }
+  }
+
   &__items {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

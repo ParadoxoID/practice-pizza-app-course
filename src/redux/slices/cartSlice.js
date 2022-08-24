@@ -5,7 +5,8 @@ const initialState = {
   items: []
 };
 
-const calcTotalPrice = items => items.reduce((acc, i) => (acc += (i.price * i.count)), 0);
+const calcTotalPrice = items =>
+  items.reduce((acc, i) => (acc += i.price * i.count), 0);
 
 export const cartSlice = createSlice({
   name: 'filter',
@@ -18,7 +19,6 @@ export const cartSlice = createSlice({
       } else {
         state.items.push({ ...action.payload, count: 1 });
       }
-
       // state.totalPrice += action.payload.price;
       state.totalPrice = calcTotalPrice(state.items);
     },

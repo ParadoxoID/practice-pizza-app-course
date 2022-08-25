@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, selectCartItemById } from '../redux/slices/cartSlice';
 
-const PizzaBlock = ({
+interface PizzaBlockProps {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+}
+
+const PizzaBlock: FC<PizzaBlockProps> = ({
   id,
   title = 'Pizza name',
   price = 0,

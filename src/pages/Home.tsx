@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useRef } from 'react';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useAppDispatch } from '../redux/store';
+import { useSelector } from 'react-redux';
 
 import {
   selectFilter,
@@ -10,7 +10,11 @@ import {
   setCurrentPage,
   setFilters
 } from '../redux/slices/filterSlice';
-import { fetchPizzas, selectPizza } from '../redux/slices/pizzaSlice';
+import {
+  fetchPizzas,
+  SearchPizzaParams,
+  selectPizza
+} from '../redux/slices/pizzaSlice';
 
 import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
@@ -59,31 +63,41 @@ const Home: FC = () => {
 
   useEffect(() => {
     if (isMounted.current) {
-      const queryString = qs.stringify({
+      const params = {
+        categoryId: categoryId > 0 ? categoryId : null,
         sortProperty: sort.sortProperty,
-        categoryId,
         currentPage
-      });
+      };
+
+      const queryString = qs.stringify(params, { skipNulls: true });
 
       navigate(`?${queryString}`);
     }
-    isMounted.current = true;
+
+    if (!window.location.search) {
+      dispatch(fetchPizzas({} as SearchPizzaParams));
+    }
   }, [categoryId, sort.sortProperty, currentPage]);
 
   useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
+      const params = qs.parse(
+        window.location.search.substring(1)
+      ) as unknown as SearchPizzaParams;
 
-      const sort = sortList.find(o => o.sortProperty === params.sortProperty);
+      const sort = sortList.find(o => o.sortProperty === params.sortBy);
 
       dispatch(
         setFilters({
-          ...params,
-          sort
+          searchValue: params.search,
+          categoryId: Number(params.category),
+          currentPage: Number(params.currentPage),
+          sort: sort || sortList[0]
         })
       );
       isSearch.current = true;
     }
+    isMounted.current = true;
   }, []);
 
   useEffect(() => {

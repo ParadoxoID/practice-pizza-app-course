@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { Sort } from './filterSlice';
 
 type PizzaItem = {
   id: number;
@@ -27,17 +28,26 @@ const initialState: PizzaSliceState = {
   status: Status.LOADING
 };
 
-export const fetchPizzas = createAsyncThunk<
-  PizzaItem[],
-  Record<string, string>
->('pizza/fetchPizzasStatus', async params => {
-  const { mockURL, sortBy, category, order, search, currentPage } = params;
-  const { data } = await axios.get<PizzaItem[]>(
-    `${mockURL}?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
-  );
+export type SearchPizzaParams = {
+  mockURL: string;
+  sortBy: string;
+  category: string;
+  order: string;
+  search: string;
+  currentPage: string;
+};
 
-  return data;
-});
+export const fetchPizzas = createAsyncThunk<PizzaItem[], SearchPizzaParams>(
+  'pizza/fetchPizzasStatus',
+  async params => {
+    const { mockURL, sortBy, category, order, search, currentPage } = params;
+    const { data } = await axios.get<PizzaItem[]>(
+      `${mockURL}?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
+    );
+
+    return data;
+  }
+);
 
 export const pizzaSlice = createSlice({
   name: 'pizza',

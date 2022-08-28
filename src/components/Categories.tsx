@@ -11,7 +11,7 @@ const categories = [
 
 interface CategoriesProps {
   value: number;
-  onChangeCategory: (num: number) => void;
+  onChangeCategory: (idx: number) => void;
 }
 
 const Categories: FC<CategoriesProps> = ({ value, onChangeCategory }) => {

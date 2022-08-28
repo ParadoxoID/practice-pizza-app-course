@@ -7,6 +7,10 @@ type SortListItem = {
   sortProperty: string;
 };
 
+type PopupClick = MouseEvent & {
+  path: Node[];
+};
+
 export const sortList: SortListItem[] = [
   { name: 'популярности (DESC)', sortProperty: 'rating' },
   { name: 'популярности (ASC)', sortProperty: '-rating' },
@@ -29,8 +33,10 @@ const Sort: FC = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (evt: any) => {
-      if (!evt.path.includes(sortRef.current)) {
+    // Страшная фигня, но ТС постоянно ругается на path у MouseEvent`a.
+    const handleClickOutside = (evt: MouseEvent) => {
+      const _evt = evt as PopupClick;
+      if (sortRef.current && !_evt.path.includes(sortRef.current)) {
         setOpen(false);
       }
     };

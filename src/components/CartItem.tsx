@@ -30,7 +30,6 @@ const CartItemBlock: FC<CartItemProps> = ({
 
   const onClickPlus = () => {
     dispatch(addItem({ id } as CartItem));
-    // dispatch(addItem({ id, price } as CartItem));
   };
 
   const onClickMinus = () => {
@@ -52,7 +51,8 @@ const CartItemBlock: FC<CartItemProps> = ({
         </p>
       </div>
       <div className="cart__item-count">
-        <div
+        <button
+          disabled={count === 1}
           onClick={onClickMinus}
           className="button button--outline button--circle cart__item-count-minus">
           <svg
@@ -70,9 +70,9 @@ const CartItemBlock: FC<CartItemProps> = ({
               fill="#EB5A1E"
             />
           </svg>
-        </div>
+        </button>
         <b>{count}</b>
-        <div
+        <button
           onClick={onClickPlus}
           className="button button--outline button--circle cart__item-count-plus">
           <svg
@@ -90,7 +90,7 @@ const CartItemBlock: FC<CartItemProps> = ({
               fill="#EB5A1E"
             />
           </svg>
-        </div>
+        </button>
       </div>
       <div className="cart__item-price">
         <b>{price * count} ₽</b>

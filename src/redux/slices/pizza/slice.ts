@@ -1,27 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
-import { Sort } from './filterSlice';
-
-type PizzaItem = {
-  id: number;
-  title: string;
-  price: number;
-  imageUrl: string;
-  sizes: number[];
-  types: number[];
-};
-
-export enum Status {
-  LOADING = 'loading',
-  SUCCESS = 'success',
-  ERROR = 'error'
-}
-
-interface PizzaSliceState {
-  items: PizzaItem[];
-  status: Status;
-}
+import { PizzaItem, PizzaSliceState, Status } from './types';
 
 const initialState: PizzaSliceState = {
   items: [],
@@ -73,23 +52,7 @@ export const pizzaSlice = createSlice({
       state.items = [];
     });
   }
-  // extraReducers: {
-  //   [fetchPizzas.pending]: state => {
-  //     state.status = 'loading';
-  //     state.items = [];
-  //   },
-  //   [fetchPizzas.fulfilled]: (state, action) => {
-  //     state.status = 'success';
-  //     state.items = action.payload;
-  //   },
-  //   [fetchPizzas.rejected]: state => {
-  //     state.status = 'error';
-  //     state.items = [];
-  //   }
-  // }
 });
-
-export const selectPizza = (state: RootState) => state.pizza;
 
 export const { setItems } = pizzaSlice.actions;
 

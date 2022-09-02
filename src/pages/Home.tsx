@@ -1,20 +1,17 @@
 import React, { FC, useCallback, useEffect, useRef } from 'react';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../redux/store';
 import { useSelector } from 'react-redux';
 
+import { useAppDispatch } from '../redux/store';
 import {
-  selectFilter,
   setCategoryId,
   setCurrentPage,
   setFilters
-} from '../redux/slices/filterSlice';
-import {
-  fetchPizzas,
-  SearchPizzaParams,
-  selectPizza
-} from '../redux/slices/pizzaSlice';
+} from '../redux/slices/filter/slice';
+import { selectFilter } from '../redux/slices/filter/selectors';
+import { fetchPizzas, SearchPizzaParams } from '../redux/slices/pizza/slice';
+import { selectPizza } from '../redux/slices/pizza/selectors';
 
 import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
